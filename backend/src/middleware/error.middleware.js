@@ -69,6 +69,20 @@ export function errorMiddleware(error, _request, response, next) {
         });
     }
 
+    if (error.type === "entity.too.large") {
+        return response.status(413).json({
+            success: false,
+            message: "Request body is too large.",
+        });
+    }
+
+    if (error.type === "encoding.unsupported") {
+        return response.status(415).json({
+            success: false,
+            message: "Request encoding is not supported.",
+        });
+    }
+
     const databaseError = getDatabaseError(error);
     if (databaseError) {
         console.error("Database error:", error.code);
