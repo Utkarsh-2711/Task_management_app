@@ -4,6 +4,7 @@ function TaskBoard({
     loading,
     filters,
     selectedProjectName,
+    showProjectFilter = false,
     onFilterChange,
     onEditTask,
     onCompleteTask,
@@ -28,6 +29,20 @@ function TaskBoard({
                         }
                     />
                 </label>
+                {showProjectFilter && (
+                    <select
+                        value={filters.projectId || ""}
+                        onChange={(event) =>
+                            onFilterChange("projectId", event.target.value)
+                        }>
+                        <option value="">All projects</option>
+                        {projects.map((project) => (
+                            <option key={project.id} value={project.id}>
+                                {project.name}
+                            </option>
+                        ))}
+                    </select>
+                )}
                 <select
                     value={filters.status}
                     onChange={(event) =>

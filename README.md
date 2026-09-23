@@ -43,16 +43,30 @@ cd Task_management_app
 
 ### 2. Configure the backend environment
 
-Create `backend/.env` locally. Do not commit this file because it contains database credentials.
+Create a `.env` file inside the `backend/` folder (`backend/.env`). Do not commit this file because it contains credentials and API keys.
 
 ```env
 PORT=5000
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
-DB_PASSWORD=your_mysql_password
+DB_PASSWORD=Your_db_password
 DB_NAME=task_management
+GEMINI_API_KEY=your_google_ai_studio_api_key
+GEMINI_MODEL=gemini-2.5-flash
 ```
+
+#### How to get Google Gemini API Key from Google AI Studio:
+1. Visit **[Google AI Studio](https://aistudio.google.com/)** and sign in with your Google account.
+2. Click on **"Get API key"** in the sidebar or top bar.
+3. Click **"Create API key"** (you can create one in a new or existing Google Cloud project).
+4. Copy your generated API key.
+5. Open `backend/.env` and paste your key into `GEMINI_API_KEY`:
+   ```env
+   GEMINI_API_KEY=your_copied_api_key_here
+   GEMINI_MODEL=gemini-2.5-flash
+   ```
+*(Note: If you run without an API key, the system includes built-in intelligent fallback heuristics so all 3 AI features continue to function seamlessly for testing).*
 
 ### 3. Install and start the backend
 
@@ -141,6 +155,14 @@ http://localhost:5000/api
 | PUT    | `/api/tasks/:id` | Update a task |
 | DELETE | `/api/tasks/:id` | Delete a task |
 
+### AI Task Assistant (Section 8)
+
+| Method | Endpoint                      | Description                                        |
+| ------ | ----------------------------- | -------------------------------------------------- |
+| POST   | `/api/ai/parse-task`          | Extract structured task data from natural language |
+| GET    | `/api/ai/project-summary/:id` | Generate concise project status summary            |
+| POST   | `/api/ai/suggest-tasks/:id`   | Suggest 1–3 actionable next tasks for a project    |
+
 Task filters use query parameters:
 
 ```text
@@ -153,6 +175,49 @@ Supported filters:
 - `status`: `todo`, `in_progress`, `completed`
 - `priority`: `low`, `medium`, `high`
 - `search`: searches task titles
+
+## 8. AI Task Assistant
+
+The application includes an AI-powered assistant that helps users create, understand, and manage tasks using Google Gemini (with robust, deterministic fallback heuristics).
+
+### AI Feature 1 — Create Task Using Natural Language
+
+Allows users to input natural language descriptions such as:
+> *"Create a high priority task for the website project to fix the login API before Friday."*
+
+The backend extracts structured task information matching the assignment specification:
+```json
+{
+  "title": "Fix login API",
+  "description": "Fix the login API",
+  "priority": "High",
+  "dueDate": "2026-09-25",
+  "project": "Website Project"
+}
+```
+**Review & Edit Workflow:**
+The frontend displays the extracted information in a dedicated review banner inside `TaskFormModal` before saving so the user can review or edit any field. The normal task creation API (`POST /api/tasks`) then saves the task.
+
+### AI Feature 2 — Task / Project Summary
+
+Provides an **AI Summarize** action on project workspaces. When triggered, the backend sends the project's tasks to the AI and displays a short summary in the React application:
+> *"The Website Project has 8 tasks. 4 are completed, 3 are in progress, and 1 is pending. The highest-priority pending task is Fix Login API, which is due tomorrow."*
+
+### AI Feature 3 — Suggested Next Tasks
+
+Provides a **Suggest Next Task** action. Based on existing project tasks, the AI suggests 1–3 useful next tasks:
+```json
+{
+  "suggestions": [
+    {
+      "title": "Add login error handling",
+      "priority": "High",
+      "reason": "The login API is currently being implemented."
+    }
+  ]
+}
+```
+Suggestions are reviewed by the user via the **"+ Review & Add"** button before being saved to the database.
 
 ## Example API Requests
 

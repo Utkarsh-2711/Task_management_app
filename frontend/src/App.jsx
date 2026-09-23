@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
     BrowserRouter,
+    Navigate,
     Route,
     Routes,
     useLocation,
@@ -32,6 +33,7 @@ function Workspace() {
     const [projects, setProjects] = useState([]);
     const [tasks, setTasks] = useState([]);
     const [filters, setFilters] = useState({
+        projectId: "",
         status: "",
         priority: "",
         search: "",
@@ -44,6 +46,12 @@ function Workspace() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [projectSummary, setProjectSummary] = useState(null);
+    const [summaryLoading, setSummaryLoading] = useState(false);
+    const [projectSuggestions, setProjectSuggestions] = useState(null);
+    const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+    const [aiReviewMeta, setAiReviewMeta] = useState(null);
+    const [appliedSuggestion, setAppliedSuggestion] = useState(null);
 
     const projectMatch = location.pathname.match(/^\/projects\/(\d+)\/tasks$/);
     const selectedProject = projectMatch ? projectMatch[1] : "all";
@@ -54,7 +62,11 @@ function Workspace() {
 
     async function loadTasks() {
         const params = new URLSearchParams();
-        if (selectedProject !== "all") params.set("projectId", selectedProject);
+        if (selectedProject !== "all") {
+            params.set("projectId", selectedProject);
+        } else if (filters.projectId) {
+            params.set("projectId", filters.projectId);
+        }
         if (filters.status) params.set("status", filters.status);
         if (filters.priority) params.set("priority", filters.priority);
         if (filters.search) params.set("search", filters.search);
@@ -83,8 +95,11 @@ function Workspace() {
         if (loading) return;
         async function refreshTasks() {
             const params = new URLSearchParams();
-            if (selectedProject !== "all")
+            if (selectedProject !== "all") {
                 params.set("projectId", selectedProject);
+            } else if (filters.projectId) {
+                params.set("projectId", filters.projectId);
+            }
             if (filters.status) params.set("status", filters.status);
             if (filters.priority) params.set("priority", filters.priority);
             if (filters.search) params.set("search", filters.search);
@@ -98,6 +113,7 @@ function Workspace() {
     }, [
         loading,
         selectedProject,
+        filters.projectId,
         filters.status,
         filters.priority,
         filters.search,
@@ -105,7 +121,7 @@ function Workspace() {
 
     function showError(requestError) {
         setError(requestError.message);
-        setTimeout(() => setError(""), 4000);
+        setTimeout(() => setError(""), 5000);
     }
 
     function openProjectForm(project = null) {
@@ -124,6 +140,8 @@ function Workspace() {
 
     function openTaskForm(task = null) {
         setEditingTask(task);
+        setAiReviewMeta(null);
+        setAppliedSuggestion(null);
         setTaskForm(
             task
                 ? { ...task, project_id: String(task.project_id) }
@@ -187,10 +205,145 @@ function Workspace() {
                 body: JSON.stringify(taskForm),
             });
             await loadTasks();
+
+            // When user adds the AI-generated suggested task, remove it from suggestions list
+            if (appliedSuggestion) {
+                setProjectSuggestions((prev) => {
+                    if (!prev || !prev.items) return prev;
+                    const remaining = prev.items.filter(
+                        (item) => item.title !== appliedSuggestion.title,
+                    );
+                    return remaining.length > 0
+                        ? { ...prev, items: remaining }
+                        : null;
+                });
+                setAppliedSuggestion(null);
+            }
+
             setModal(null);
+            setAiReviewMeta(null);
         } catch (requestError) {
             showError(requestError);
         }
+    }
+
+    async function generateTaskFromPrompt(prompt, contextualProjectId = null) {
+        const payload = { prompt };
+        if (contextualProjectId) {
+            payload.projectId = contextualProjectId;
+        } else if (selectedProject !== "all") {
+            payload.projectId = selectedProject;
+        }
+        const extractedTask = await request("/ai/parse-task", {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+
+        const targetProjectId = extractedTask.project_id
+            ? String(extractedTask.project_id)
+            : contextualProjectId
+              ? String(contextualProjectId)
+              : selectedProject !== "all"
+                ? String(selectedProject)
+                : String(projects[0]?.id || "");
+
+        const normalizedPriority = String(
+            extractedTask.priority || "medium",
+        ).toLowerCase();
+
+        setEditingTask(null);
+        setTaskForm({
+            ...emptyTask,
+            title: extractedTask.title || "",
+            description: extractedTask.description || extractedTask.title || "",
+            status: extractedTask.status || "todo",
+            priority: ["low", "medium", "high"].includes(normalizedPriority)
+                ? normalizedPriority
+                : "medium",
+            due_date: extractedTask.due_date || extractedTask.dueDate || "",
+            project_id: targetProjectId,
+        });
+
+        setAiReviewMeta({
+            source: "natural_language",
+            prompt,
+            extracted: extractedTask,
+        });
+        setModal("task");
+        return extractedTask;
+    }
+
+    async function summarizeProject(projectId = "all") {
+        setSummaryLoading(true);
+        try {
+            const path =
+                projectId && projectId !== "all"
+                    ? `/ai/project-summary/${projectId}`
+                    : `/ai/summary`;
+            const result = await request(path);
+            setProjectSummary({
+                projectId: String(projectId || "all"),
+                text: result.summary,
+            });
+        } catch (requestError) {
+            showError(requestError);
+        } finally {
+            setSummaryLoading(false);
+        }
+    }
+
+    async function suggestTasks(projectId = "all") {
+        setSuggestionsLoading(true);
+        try {
+            const path =
+                projectId && projectId !== "all"
+                    ? `/ai/suggest-tasks/${projectId}`
+                    : `/ai/suggest-tasks`;
+            const result = await request(path, {
+                method: "POST",
+            });
+            setProjectSuggestions({
+                projectId: String(projectId || "all"),
+                items: result.suggestions || [],
+            });
+        } catch (requestError) {
+            showError(requestError);
+        } finally {
+            setSuggestionsLoading(false);
+        }
+    }
+
+    function applySuggestedTask(suggestion, projectId) {
+        setEditingTask(null);
+        setAppliedSuggestion(suggestion);
+        const priLower = String(suggestion.priority || "medium").toLowerCase();
+        setTaskForm({
+            ...emptyTask,
+            project_id: String(projectId),
+            title: suggestion.title || "",
+            description: suggestion.reason || "",
+            priority: ["low", "medium", "high"].includes(priLower)
+                ? priLower
+                : "medium",
+            status: "todo",
+        });
+        setAiReviewMeta({
+            source: "suggestion",
+            suggestion,
+        });
+        setModal("task");
+    }
+
+    function dismissSuggestion(targetIndex) {
+        setProjectSuggestions((prev) => {
+            if (!prev || !prev.items) return prev;
+            const remaining = prev.items.filter((_, idx) => idx !== targetIndex);
+            return remaining.length > 0 ? { ...prev, items: remaining } : null;
+        });
+    }
+
+    function closeSuggestionsPanel() {
+        setProjectSuggestions(null);
     }
 
     async function completeTask(task) {
@@ -255,6 +408,10 @@ function Workspace() {
                 {error && <div className="alert">{error}</div>}
                 <Routes>
                     <Route
+                        path="/"
+                        element={<Navigate to="/projects" replace />}
+                    />
+                    <Route
                         path="/projects"
                         element={
                             <ProjectsPage
@@ -270,11 +427,40 @@ function Workspace() {
                     />
                     <Route
                         path="/projects/:projectId/tasks"
-                        element={<ProjectTasksPage {...pageProps} />}
+                        element={
+                            <ProjectTasksPage
+                                {...pageProps}
+                                projectSummary={projectSummary}
+                                summaryLoading={summaryLoading}
+                                onSummarizeProject={summarizeProject}
+                                projectSuggestions={projectSuggestions}
+                                suggestionsLoading={suggestionsLoading}
+                                onSuggestTasks={suggestTasks}
+                                onApplySuggestion={applySuggestedTask}
+                                onDismissSuggestion={dismissSuggestion}
+                                onCloseSuggestionsPanel={closeSuggestionsPanel}
+                                onGenerateTask={generateTaskFromPrompt}
+                            />
+                        }
                     />
                     <Route
                         path="/tasks"
-                        element={<AllTasksPage {...pageProps} />}
+                        element={
+                            <AllTasksPage
+                                {...pageProps}
+                                showProjectFilter={true}
+                                onGenerateTask={generateTaskFromPrompt}
+                                projectSummary={projectSummary}
+                                summaryLoading={summaryLoading}
+                                onSummarizeProject={summarizeProject}
+                                projectSuggestions={projectSuggestions}
+                                suggestionsLoading={suggestionsLoading}
+                                onSuggestTasks={suggestTasks}
+                                onApplySuggestion={applySuggestedTask}
+                                onDismissSuggestion={dismissSuggestion}
+                                onCloseSuggestionsPanel={closeSuggestionsPanel}
+                            />
+                        }
                     />
                     <Route path="*" element={<NotFoundPage />} />
                 </Routes>
@@ -298,8 +484,14 @@ function Workspace() {
                     onChange={(key, value) =>
                         setTaskForm({ ...taskForm, [key]: value })
                     }
+                    onGenerateTask={generateTaskFromPrompt}
                     onSubmit={submitTask}
-                    onClose={() => setModal(null)}
+                    onClose={() => {
+                        setModal(null);
+                        setAiReviewMeta(null);
+                        setAppliedSuggestion(null);
+                    }}
+                    aiReviewMeta={aiReviewMeta}
                 />
             )}
         </div>

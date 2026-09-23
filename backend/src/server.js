@@ -5,6 +5,7 @@ import "dotenv/config";
 import healthRoutes from "./routes/health.routes.js";
 import projectRoutes from "./routes/project.routes.js";
 import taskRoutes from "./routes/task.routes.js";
+import aiRoutes from "./routes/ai.routes.js";
 import { checkDatabaseConnection, initializeDatabase } from "./config/db.js";
 import {
     errorMiddleware,
@@ -28,6 +29,7 @@ app.get("/", (_request, response) => {
 app.use("/api/health", healthRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use("/api/ai", aiRoutes);
 
 // Return a consistent JSON response when no registered route matches the request.
 app.use((_request, response) => {

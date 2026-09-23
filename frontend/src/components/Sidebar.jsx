@@ -40,6 +40,15 @@ function Sidebar({
                     className={({ isActive }) =>
                         `nav-item ${isActive ? "active" : ""}`
                     }
+                    to="/projects"
+                    onClick={onClose}>
+                    <span>Projects</span>
+                    <strong>{projects.length}</strong>
+                </NavLink>
+                <NavLink
+                    className={({ isActive }) =>
+                        `nav-item ${isActive ? "active" : ""}`
+                    }
                     to="/tasks"
                     onClick={() => {
                         onSelectProject("all");

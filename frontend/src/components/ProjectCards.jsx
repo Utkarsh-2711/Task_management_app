@@ -18,7 +18,7 @@ function ProjectCards({
                 <h2>Keep the big picture close.</h2>
             </div>
             <div className="project-cards">
-                {projects.slice(0, 3).map((project) => (
+                {projects.map((project) => (
                     // Completion is enabled only when this project's tasks are all complete.
                     <div
                         className="project-card"

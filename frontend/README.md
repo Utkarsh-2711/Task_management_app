@@ -43,6 +43,11 @@ npm run build
 - Reopen a completed project when needed.
 - Inline form validation and readable API error messages.
 - Responsive layout for desktop and mobile screens.
+- **AI Task Assistant (Section 8)**:
+  - Natural Language Task Creation bar on dashboard & project views (`AiTaskCreatorBar`).
+  - Pre-save review banner and editing step in `TaskFormModal` before executing `POST /api/tasks`.
+  - **AI Summarize** action displaying a concise 2–3 sentence status overview with copy button.
+  - **Suggest Next Task** action with 1–3 actionable suggestions and one-click "Review & Add".
 
 ## Frontend Structure
 
@@ -51,13 +56,14 @@ src/
   App.jsx                    Router and shared application state
   services/api.js            Centralized fetch and API error handling
   components/
+    AiTaskCreatorBar.jsx     Natural language task input with sample prompts
     ProjectsPage.jsx         Project overview
-    ProjectTasksPage.jsx     Tasks for one project
-    AllTasksPage.jsx         All tasks view
+    ProjectTasksPage.jsx     Tasks for one project with AI summary & suggestions
+    AllTasksPage.jsx         All tasks view with AI Task Assistant
     ProjectCards.jsx         Project actions and progress
     TaskBoard.jsx            Task search, filters, and actions
     ProjectFormModal.jsx     Project form validation
-    TaskFormModal.jsx        Task form validation
+    TaskFormModal.jsx        Task form review/edit modal with AI preview banner
     Sidebar.jsx              Application navigation
 ```
 

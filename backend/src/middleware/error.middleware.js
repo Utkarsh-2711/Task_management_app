@@ -83,6 +83,31 @@ export function errorMiddleware(error, _request, response, next) {
         });
     }
 
+    if (error.code === "AI_NOT_CONFIGURED") {
+        return response.status(503).json({
+            success: false,
+            message: error.message,
+        });
+    }
+
+    if (error.code === "AI_TIMEOUT") {
+        return response.status(504).json({
+            success: false,
+            message: "AI response took too long. Please try again.",
+        });
+    }
+
+    if (error.code === "AI_REQUEST_FAILED") {
+        console.error(
+            "AI provider error:",
+            error.cause?.message || error.message,
+        );
+        return response.status(502).json({
+            success: false,
+            message: error.message,
+        });
+    }
+
     const databaseError = getDatabaseError(error);
     if (databaseError) {
         console.error("Database error:", error.code);

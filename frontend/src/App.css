@@ -252,6 +252,384 @@ button {
     margin-bottom: 22px;
     font-size: 13px;
 }
+/* ==========================================================================
+   AI Task Assistant (Section 8: Feature 1, 2, 3)
+   ========================================================================== */
+
+.ai-sparkle-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    background: linear-gradient(135deg, #183827 0%, #2a583e 100%);
+    color: #e5fbe9;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+.ai-feature-tag {
+    font-size: 10px;
+    font-family: "DM Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: #3b6348;
+    background: #e2ede0;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.ai-badge-row,
+.ai-summary-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+/* Feature 1: Natural Language Task Creator Bar */
+.ai-creator-bar {
+    background: linear-gradient(145deg, #f7faf6 0%, #edf5eb 100%);
+    border: 1px solid #c8dcc3;
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 10px rgba(27, 56, 43, 0.04);
+}
+
+.ai-creator-header {
+    margin-bottom: 8px;
+}
+
+.ai-creator-subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 4px 0 0;
+    line-height: 1.4;
+}
+
+.ai-input-wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.ai-natural-input {
+    flex: 1;
+    min-width: 0;
+    background: #ffffff !important;
+    border: 1px solid #b8d2b3 !important;
+    border-radius: 8px !important;
+    padding: 12px 16px !important;
+    font-size: 13px !important;
+    color: var(--ink) !important;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.03);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ai-natural-input:focus {
+    border-color: var(--green) !important;
+    box-shadow: 0 0 0 3px rgba(35, 77, 56, 0.12) !important;
+}
+
+.ai-submit-btn {
+    white-space: nowrap;
+    min-height: 44px;
+    padding: 0 20px;
+    font-weight: 600;
+}
+
+.ai-bar-error {
+    margin: 8px 0 0;
+}
+
+.ai-pills-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.ai-pills-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+.ai-sample-pill {
+    background: #ffffff;
+    border: 1px solid #c7debe;
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 11px;
+    color: #275238;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+}
+
+.ai-sample-pill:hover {
+    background: #e3f2df;
+    border-color: #a8cc9e;
+    transform: translateY(-1px);
+}
+
+/* Feature 1 Review Banner inside Modal */
+.ai-review-banner {
+    background: #eef7ec;
+    border: 1px solid #b7d6b0;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    margin-bottom: 6px;
+}
+
+.ai-review-banner-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.ai-review-badge {
+    font-size: 10px;
+    font-family: "DM Mono", monospace;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #2b5735;
+    background: #d8edd4;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.ai-review-text {
+    font-size: 12px;
+    color: #2b4532;
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+}
+
+.ai-review-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.ai-chip {
+    background: #ffffff;
+    border: 1px solid #c0dcba;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: var(--ink);
+}
+
+.ai-chip strong {
+    color: #2a5834;
+    margin-right: 4px;
+}
+
+/* Feature 2: Task / Project Summary Section */
+.ai-summary-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin: 0 0 28px;
+    padding: 18px 22px;
+    border: 1px solid #cfe0ca;
+    border-radius: 10px;
+    background: linear-gradient(145deg, #edf5eb 0%, #e6f0e3 100%);
+    box-shadow: 0 2px 8px rgba(27, 56, 43, 0.03);
+}
+
+.ai-summary-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.ai-summary-text,
+.ai-summary-placeholder {
+    margin: 6px 0 0;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.ai-summary-placeholder {
+    color: var(--muted);
+}
+
+.ai-summary-result-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #ffffff;
+    border: 1px solid #d4e4d0;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 8px;
+}
+
+.ai-summary-result-box .ai-summary-text {
+    margin: 0;
+    flex: 1;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink);
+}
+
+.ai-copy-btn {
+    background: #edf5eb;
+    border: 1px solid #c5dec0;
+    color: #244b36;
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+}
+
+.ai-copy-btn:hover {
+    background: #d8edd3;
+}
+
+.ai-buttons-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.ai-action-btn {
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+/* Feature 3: Suggested Next Tasks Panel */
+.ai-suggestions-panel {
+    margin: -12px 0 28px;
+    padding: 18px 22px;
+    background: #fbfdfa;
+    border: 1px solid #d8e5d5;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(27, 56, 43, 0.02);
+}
+
+.ai-suggestions-intro {
+    margin-bottom: 14px;
+}
+
+.ai-suggestions-intro-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.ai-panel-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: var(--muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ai-panel-close-btn:hover {
+    background: #e4eee1;
+    color: var(--ink);
+}
+
+.ai-suggestions-intro small {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 4px;
+    line-height: 1.4;
+}
+
+.ai-suggestions-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 14px;
+}
+
+.ai-suggestion-card {
+    background: #ffffff;
+    border: 1px solid #e1ebe0;
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ai-suggestion-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.ai-suggestion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.ai-suggestion-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    color: #9ba899;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 4px;
+    border-radius: 4px;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ai-suggestion-close-btn:hover {
+    background: #fdf2f0;
+    color: #b53826;
+}
+
+.ai-suggestion-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.ai-suggestion-title {
+    font-size: 14px;
+    color: var(--ink);
+}
+
+.ai-suggestion-reason {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+    margin: 0;
+    flex: 1;
+}
+
+.ai-add-btn {
+    align-self: flex-start;
+    font-size: 12px;
+    padding: 6px 12px;
+    margin-top: 4px;
+}
 .not-found-page {
     min-height: 55vh;
     display: grid;
@@ -341,6 +719,33 @@ button {
     font-size: 24px;
     letter-spacing: -1px;
     margin: 8px 0 0;
+}
+.ai-task-helper {
+    display: grid;
+    gap: 9px;
+    margin-top: 20px;
+    padding: 14px;
+    border: 1px solid #cfe0ca;
+    border-radius: 7px;
+    background: #edf4ec;
+}
+.ai-task-helper label {
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 700;
+}
+.ai-task-helper textarea {
+    min-height: 74px;
+    background: white;
+}
+.ai-task-helper .secondary-button {
+    justify-content: center;
+    min-height: 44px;
+    width: 100%;
+}
+.ai-helper-note {
+    color: var(--muted);
+    font-size: 11px;
 }
 .text-button {
     background: none;
@@ -761,6 +1166,9 @@ button {
         width: auto;
         flex-direction: row;
         align-items: center;
+    }
+    .ai-summary-section .secondary-button {
+        flex: 0 0 auto;
     }
     .summary-grid {
         grid-template-columns: repeat(2, 1fr);

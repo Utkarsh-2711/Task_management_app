@@ -56,6 +56,14 @@ The server initializes `database/schema.sql` on startup, creates the database an
 | PUT    | `/api/tasks/:id` | Update one task |
 | DELETE | `/api/tasks/:id` | Delete one task |
 
+### AI Assistant (Section 8)
+
+| Method | Endpoint                      | Description                                        |
+| ------ | ----------------------------- | -------------------------------------------------- |
+| POST   | `/api/ai/parse-task`          | Extract structured task data from natural language |
+| GET    | `/api/ai/project-summary/:id` | Get concise 2–3 sentence project summary           |
+| POST   | `/api/ai/suggest-tasks/:id`   | Generate 1–3 useful next tasks for a project       |
+
 Task filters are available through query parameters:
 
 ```text

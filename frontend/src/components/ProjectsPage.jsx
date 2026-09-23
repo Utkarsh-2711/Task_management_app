@@ -25,6 +25,7 @@ function ProjectsPage({
                     + New project
                 </button>
             </header>
+
             <SummaryCards
                 taskCount={tasks.length}
                 pendingTasks={tasks.length - completedTasks}
